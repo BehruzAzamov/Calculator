@@ -15,6 +15,19 @@ const darkTheme = {
   buttonColor: '#ffffff',
 };
 
+const customTheme = {
+  background: '#ffcc00',
+  text: '#000000',
+  buttonBackground: '#ff9900',
+  buttonColor: '#ffffff',
+};
+
+const themes = {
+  light: lightTheme,
+  dark: darkTheme,
+  custom: customTheme,
+};
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -60,7 +73,7 @@ const Display = styled.input`
 
 const ModeButton = styled.button`
   margin-bottom: 10px;
-  width: 50px;
+  width: 63px;
   height: 30px;
   border-radius: 15px;
   position: relative;
@@ -70,21 +83,29 @@ const ModeButton = styled.button`
   &::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: ${props => (props.isDarkMode ? '25px' : '2px')};
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    top: 1px;
+    left: ${props => {
+      if (props.theme === lightTheme) {
+        return '3px';
+      } else if (props.theme === darkTheme) {
+        return '23px';
+      } else if (props.theme === customTheme) {
+        return '43px';
+      }
+    }};
+    width: 14px;
+    height: 25px;
+    border-radius: 7px;
     background-color: #fff;
-    transition: left 0.3s ease;
+    transition: left 0.3s;
   }
 `;
 
 const Calculator = () => {
   const [displayValue, setDisplayValue] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [theme, setTheme] = useState('light');
 
-  const handleButtonClick = (value) => {
+  const handleButtonClick = value => {
     setDisplayValue(displayValue + value);
   };
 
@@ -101,11 +122,17 @@ const Calculator = () => {
   };
 
   const toggleMode = () => {
-    setIsDarkMode(prevMode => !prevMode);
+    if (theme === 'light') {
+      setTheme('dark');
+    } else if (theme === 'dark') {
+      setTheme('custom');
+    } else {
+      setTheme('light');
+    }
   };
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={themes[theme]}>
       <Container>
         <CalculatorWrapper>
           <Display type="text" value={displayValue} readOnly />
@@ -133,7 +160,7 @@ const Calculator = () => {
             <Button onClick={calculateResult}>=</Button>
             <Button onClick={() => handleButtonClick('/')}>/</Button>
           </Row>
-          <ModeButton onClick={toggleMode} isDarkMode={isDarkMode}></ModeButton>
+          <ModeButton onClick={toggleMode} />
         </CalculatorWrapper>
       </Container>
     </ThemeProvider>
